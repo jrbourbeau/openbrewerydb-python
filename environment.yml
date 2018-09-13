@@ -1,0 +1,6 @@
+name: openbrewerydb
+channels:
+  - conda-forge
+dependencies:
+  - pandas
+  - requests
