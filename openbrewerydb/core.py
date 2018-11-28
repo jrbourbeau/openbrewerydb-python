@@ -24,41 +24,54 @@ def _execute_request(url):
     return df
 
 
-def _construct_query(state=None, city=None, brewery_type=None, sort=None,
-                     ascending=True):
-    url = 'https://api.openbrewerydb.org/breweries'
+def format_state(state):
+    if state.lower() not in valid_states:
+        raise ValueError(f'Invalid state entered, \'{state}\'')
+    return f'by_state={state}'
+
+
+def format_city(city):
+    return f'by_city={city}'
+
+
+def format_brewery_type(brewery_type):
+    valid_types = {'micro',
+                   'regional',
+                   'brewpub',
+                   'large',
+                   'planning',
+                   'bar',
+                   'contract',
+                   'proprietor',
+                   }
+    if brewery_type not in valid_types:
+        raise ValueError(f'Invalid brewery_type entered. Must be in '
+                         '{valid_types}, but got \'{brewery_type}\'.')
+    return f'by_type={brewery_type}'
+
+
+def _construct_query(state=None, city=None, brewery_type=None):
+    base_url = 'https://api.openbrewerydb.org/breweries'
     selectors = []
     if state is not None:
-        if state not in valid_states:
-            raise ValueError(f'Invalid state entered, \'{state}\'')
-        selectors.append(f'by_state={state}')
+        selectors.append(format_state(state))
     if city is not None:
-        selectors.append(f'by_city={city}')
+        selectors.append(format_city(city))
     if brewery_type is not None:
-        valid_types = {'micro', 'regional', 'brewpub', 'large', 'planning'}
-        if brewery_type not in valid_types:
-            raise ValueError(f'Invalid brewery_type entered. Must be in '
-                             '{valid_types}, but got \'{brewery_type}\'.')
-        selectors.append(f'by_type={brewery_type}')
-    if sort is not None:
-        order = '' if ascending else '-'
-        selectors.append(f'sort={order}{sort}')
+        selectors.append(format_brewery_type(brewery_type))
 
     if selectors:
-        url += '?' + '&'.join(selectors)
+        url = base_url + '?' + '&'.join(selectors)
 
     return url
 
 
-def _gen_data(state=None, city=None, brewery_type=None, sort=None,
-              ascending=True):
+def _gen_data(state=None, city=None, brewery_type=None):
 
     url = _construct_query(state=state,
                            city=city,
-                           brewery_type=brewery_type,
-                           sort=sort,
-                           ascending=ascending)
-    for page in count():
+                           brewery_type=brewery_type)
+    for page in count(start=1):
         query_url = url + f'&page={page}&per_page=50'
         df = _execute_request(query_url)
         if df.empty:
@@ -67,7 +80,7 @@ def _gen_data(state=None, city=None, brewery_type=None, sort=None,
             yield df
 
 
-def load(state=None, city=None, brewery_type=None, sort=None, ascending=True):
+def load(state=None, city=None, brewery_type=None):
     """ Perform query against Open Brewery DB
 
     Parameters
@@ -79,12 +92,6 @@ def load(state=None, city=None, brewery_type=None, sort=None, ascending=True):
     brewery_type : {None, 'micro', 'regional', 'brewpub', 'large', 'planning'}
         Brewery type to filter by (default is None, all brewery types will be
         included).
-    sort : {None, 'state', 'city', 'type'}
-        Value to sort data according to (default is None, no sorting will be
-        done).
-    ascending : boolean, optional
-        Option to sort in ascending or descending order (default is True,
-        so ascending order will be used). Only used if sort is not None.
 
     Returns
     -------
@@ -98,9 +105,7 @@ def load(state=None, city=None, brewery_type=None, sort=None, ascending=True):
     """
     data_generator = _gen_data(state=state,
                                city=city,
-                               brewery_type=brewery_type,
-                               sort=sort,
-                               ascending=ascending)
+                               brewery_type=brewery_type)
     data = [d for d in data_generator]
     if not data:
         raise ValueError('No data found for this query')

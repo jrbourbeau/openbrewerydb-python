@@ -1,11 +1,13 @@
-# openbrewerydb
+# openbrewerydb-python
 
-A Python API for downloading data from [Open Brewery DB](https://www.openbrewerydb.org/).
+
+A Python wrapper for the [Open Brewery DB API](https://www.openbrewerydb.org/).
 
 
 ## Installation
 
 `openbrewerydb` can be installed directly from GitHub via
+
 ```
 pip install git+https://github.com/jrbourbeau/openbrewerydb-python.git
 ```

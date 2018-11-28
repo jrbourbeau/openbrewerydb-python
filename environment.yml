@@ -4,3 +4,6 @@ channels:
 dependencies:
   - pandas
   - requests
+  - pytest
+  - pytest-cov
+  - pytest-remotedata

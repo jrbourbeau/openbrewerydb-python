@@ -8,7 +8,7 @@ from shutil import rmtree
 from setuptools import setup, find_packages, Command
 
 NAME = 'openbrewerydb'
-DESCRIPTION = 'Python API for downloading data from openbrewerydb.org'
+DESCRIPTION = 'Python wrapper for the Open Brewery DB API'
 MAINTAINER = 'James Bourbeau'
 URL = 'https://github.com/jrbourbeau/openbrewerydb-python'
 LICENSE = 'MIT'
