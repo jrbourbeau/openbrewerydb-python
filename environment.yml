@@ -4,6 +4,9 @@ channels:
 dependencies:
   - pandas
   - requests
+  - flake8
   - pytest
   - pytest-cov
   - pytest-remotedata
+  - sphinx
+  - numpydoc

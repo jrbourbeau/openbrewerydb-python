@@ -1,0 +1,40 @@
+language: minimal
+os: linux
+
+env:
+  global:
+    # Doctr deploy key for jrbourbeau/openbrewerydb-python
+    - secure: "RTmDfqpFK+dsV8IAw/Mam6hhLBNo8UmEAC21XxwrkGNYYkt/8ATiazD2qk3XagP4K90UcwW/WmXbZ18kpC/d8SR8yQQz08N3MtL4p7tIplomO4HBszSf97/e+Ma7Tu2woWZMJSXNP/uxNXH09o1OrZa+BB2ak53MNA5EnIEbBEoWBV6EoFhguCSarF1MK/0yOLswtFu861V2JI63EGnrDMdTvHqCBXI3eW5kKdooCEVUoL5OkOFfjHA00BfT8Vz+z7DHvsRMORU/X3Plon408PKdpmsewHk2L+8oDhoqrqb/F6zhVR14sukIByleD4RNligY91vkrxxkozRMi3d/RqHzhsM7hjLHjjHkfV/+bWJUL6hiBCHmcNWiqR8jdDEWiMfNv/Ad5CuLhSjxnJ/W2YIk2Eabc0t5QO5Csem+Ju0+gMMbGeGbUrWJQp4CFYYnPEjTa7yeL1y31om0VfxUfgZVh+HbKjYLKGbEFK6tJ/wTYZAVSqMFfgaxV21J36BNQJ/XU/a/bua0Vw90P3JdsrYxv1+P28zV9Zq84JkgF/Lc8B5SV6C/u3lsDjhAPXc9z19VDYwJ+ObQ9oODP+q+yE6tc6f88ETmmWRzrFX1ZJumdXaplev7MMypM+niKAsJnXAwW01emINsir1CWxPpiNm1ACwdB1ER3gwS1ceSuw4="
+
+jobs:
+  fast_finish: true
+  include:
+    - env:
+      - PYTHON=3.6
+      - COVERAGE='true'
+      - DOCS=true
+    - env:
+      - PYTHON=3.7
+      - COVERAGE='false'
+    - env:
+      - PYTHON=3.7
+      - COVERAGE='false'
+      os: osx
+
+install:
+  - source ci/install.sh;
+
+script:
+  - set -e
+  - pytest --cov=openbrewerydb openbrewerydb --remote-data
+  - flake8 openbrewerydb
+  - if [[ "$DOCS" == "true" ]]; then
+      source ci/build_docs.sh;
+    fi
+  - if [[ "$DOCS" == "true" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_EVENT_TYPE" == "push" ]]; then
+      pip install doctr;
+      doctr deploy . --built-docs docs/build/html/ ;
+    fi
+
+notifications:
+  email: false

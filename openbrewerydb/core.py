@@ -81,27 +81,33 @@ def _gen_data(state=None, city=None, brewery_type=None):
 
 
 def load(state=None, city=None, brewery_type=None):
-    """ Perform query against Open Brewery DB
+    """ Query the Open Brewery DB
 
     Parameters
     ----------
     state : str, optional
-        State name to filter by (default is None, all states will be included).
+        State name (case-insensitive) to filter by (default is ``None``, all
+        states will be included). Note that `'district of columbia'` is a
+        valid ``state``.
     city : str, optional
-        City name to filter by (default is None, all cities will be included).
-    brewery_type : {None, 'micro', 'regional', 'brewpub', 'large', 'planning'}
-        Brewery type to filter by (default is None, all brewery types will be
+        City name (case-insensitive) to filter by (default is ``None``, all
+        cities will be included).
+    brewery_type : {None, 'micro', 'regional', 'brewpub', 'large', 'planning', 'bar', 'contract', 'proprietor'}
+        Brewery type to filter by (default is ``None``, all brewery types will be
         included).
 
     Returns
     -------
     data : pandas.DataFrame
-        DataFrame
+        DataFrame with query results
 
     Examples
     --------
+    Get information about all micro breweries in Wisconsin
+
     >>> import openbrewerydb
-    >>> data = openbrewerydb.load(state='wisconsin')
+    >>> data = openbrewerydb.load(state='wisconsin',
+    ...                           brewery_type='micro')
     """
     data_generator = _gen_data(state=state,
                                city=city,

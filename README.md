@@ -1,5 +1,8 @@
 # openbrewerydb-python
 
+[![Build Status](https://travis-ci.org/jrbourbeau/openbrewerydb-python.svg?branch=master)](https://travis-ci.org/jrbourbeau/openbrewerydb-python)
+[![GitHub license](https://img.shields.io/github/license/jrbourbeau/openbrewerydb-python.svg)](https://github.com/jrbourbeau/openbrewerydb-python/blob/master/LICENSE)
+
 
 A Python wrapper for the [Open Brewery DB API](https://www.openbrewerydb.org/).
 
