@@ -1,0 +1,213 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>openbrewerydb.core &#8212; openbrewerydb-python  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for openbrewerydb.core</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">count</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">.states</span> <span class="k">import</span> <span class="n">states</span> <span class="k">as</span> <span class="n">valid_states</span>
+
+
+<span class="k">def</span> <span class="nf">_execute_request</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">json</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">json</span><span class="p">:</span>
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span>
+                  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                  <span class="s1">&#39;brewery_type&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;country&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;latitude&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                  <span class="s1">&#39;longitude&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                  <span class="p">}</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">json</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+
+<span class="k">def</span> <span class="nf">format_state</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_states</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Invalid state entered, </span><span class="se">\&#39;</span><span class="si">{state}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;by_state=</span><span class="si">{state}</span><span class="s1">&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">format_city</span><span class="p">(</span><span class="n">city</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;by_city=</span><span class="si">{city}</span><span class="s1">&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">format_brewery_type</span><span class="p">(</span><span class="n">brewery_type</span><span class="p">):</span>
+    <span class="n">valid_types</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;micro&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;regional&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;brewpub&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;large&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;planning&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;contract&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;proprietor&#39;</span><span class="p">,</span>
+                   <span class="p">}</span>
+    <span class="k">if</span> <span class="n">brewery_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_types</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Invalid brewery_type entered. Must be in &#39;</span>
+                         <span class="s1">&#39;</span><span class="si">{valid_types}</span><span class="s1">, but got </span><span class="se">\&#39;</span><span class="si">{brewery_type}</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;by_type=</span><span class="si">{brewery_type}</span><span class="s1">&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">_construct_query</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brewery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">base_url</span> <span class="o">=</span> <span class="s1">&#39;https://api.openbrewerydb.org/breweries&#39;</span>
+    <span class="n">selectors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">selectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_state</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">city</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">selectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_city</span><span class="p">(</span><span class="n">city</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">brewery_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">selectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_brewery_type</span><span class="p">(</span><span class="n">brewery_type</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">selectors</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="o">+</span> <span class="s1">&#39;?&#39;</span> <span class="o">+</span> <span class="s1">&#39;&amp;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">selectors</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">url</span>
+
+
+<span class="k">def</span> <span class="nf">_gen_data</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brewery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">_construct_query</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                           <span class="n">city</span><span class="o">=</span><span class="n">city</span><span class="p">,</span>
+                           <span class="n">brewery_type</span><span class="o">=</span><span class="n">brewery_type</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">query_url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="n">f</span><span class="s1">&#39;&amp;page=</span><span class="si">{page}</span><span class="s1">&amp;per_page=50&#39;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">_execute_request</span><span class="p">(</span><span class="n">query_url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">df</span>
+
+
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../index.html#openbrewerydb.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brewery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Query the Open Brewery DB</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : str, optional</span>
+<span class="sd">        State name (case-insensitive) to filter by (default is ``None``, all</span>
+<span class="sd">        states will be included). Note that `&#39;district of columbia&#39;` is a</span>
+<span class="sd">        valid ``state``.</span>
+<span class="sd">    city : str, optional</span>
+<span class="sd">        City name (case-insensitive) to filter by (default is ``None``, all</span>
+<span class="sd">        cities will be included).</span>
+<span class="sd">    brewery_type : {None, &#39;micro&#39;, &#39;regional&#39;, &#39;brewpub&#39;, &#39;large&#39;, &#39;planning&#39;, &#39;bar&#39;, &#39;contract&#39;, &#39;proprietor&#39;}</span>
+<span class="sd">        Brewery type to filter by (default is ``None``, all brewery types will be</span>
+<span class="sd">        included).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : pandas.DataFrame</span>
+<span class="sd">        DataFrame with query results</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Get information about all micro breweries in Wisconsin</span>
+
+<span class="sd">    &gt;&gt;&gt; import openbrewerydb</span>
+<span class="sd">    &gt;&gt;&gt; data = openbrewerydb.load(state=&#39;wisconsin&#39;,</span>
+<span class="sd">    ...                           brewery_type=&#39;micro&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_generator</span> <span class="o">=</span> <span class="n">_gen_data</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                               <span class="n">city</span><span class="o">=</span><span class="n">city</span><span class="p">,</span>
+                               <span class="n">brewery_type</span><span class="o">=</span><span class="n">brewery_type</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data_generator</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No data found for this query&#39;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Useful Links</h3>
+
+<ul>
+    <li>
+        <a href="https://github.com/jrbourbeau/openbrewerydb-python">openbrewerydb-python @ GitHub</a> 
+    </li>
+    <li>
+        <a href="https://www.openbrewerydb.org/">Open Brewery DB</a> 
+    </li>
+</ul><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, James Bourbeau.
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
