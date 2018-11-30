@@ -1,0 +1,170 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Example Usage &#8212; openbrewerydb-python 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="API Documentation" href="api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="example-usage">
+<h1>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h1>
+<p>We can use the <code class="docutils literal notranslate"><span class="pre">openbrewerydb.load</span></code> function to query Open Brewery DB and retrieve brewery information. For example, we can get brewery data for the state of Wisconsin</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openbrewerydb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">openbrewerydb</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;wisconsin&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>What’s returned is a Pandas <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> with information about the breweries in Wisconsin (each row is a different brewery). The columns of this <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> are:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">columns</span>
+<span class="go">Index([&#39;brewery_type&#39;, &#39;city&#39;, &#39;country&#39;, &#39;id&#39;, &#39;latitude&#39;, &#39;longitude&#39;,</span>
+<span class="go">    &#39;name&#39;, &#39;phone&#39;, &#39;postal_code&#39;, &#39;state&#39;, &#39;street&#39;, &#39;tag_list&#39;,</span>
+<span class="go">    &#39;updated_at&#39;, &#39;website_url&#39;],</span>
+<span class="go">    dtype=&#39;object&#39;)</span>
+</pre></div>
+</div>
+<p>At this point, all the normal functionality in Pandas is available for us to play with. For example, if we want to know what the distribution of brewery types, we can use the <code class="docutils literal notranslate"><span class="pre">DataFrame.value_counts()</span></code> method to get the total number of each brewery type</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">brewery_types</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;brewery_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brewery_types</span>
+<span class="go">micro         89</span>
+<span class="go">brewpub       73</span>
+<span class="go">contract      17</span>
+<span class="go">planning      16</span>
+<span class="go">regional       9</span>
+<span class="go">large          5</span>
+<span class="go">proprietor     2</span>
+<span class="go">Name: brewery_type, dtype: int64</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/OpenBreweryDBLogo-1200x630.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python wrapper for the Open Brewery DB API</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jrbourbeau&repo=openbrewerydb-python&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jrbourbeau/openbrewerydb-python">
+    <img
+        alt="https://secure.travis-ci.org/jrbourbeau/openbrewerydb-python.svg?branch=master"
+        src="https://secure.travis-ci.org/jrbourbeau/openbrewerydb-python.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+<h3>Useful Links</h3>
+
+<ul>
+    <li>
+        <a href="https://github.com/jrbourbeau/openbrewerydb-python">openbrewerydb-python @ GitHub</a> 
+    </li>
+    <li>
+        <a href="https://www.openbrewerydb.org/">Open Brewery DB</a> 
+    </li>
+</ul><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">API Documentation</a></li>
+      <li>Next: <a href="changelog.html" title="next chapter">Changelog</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, James Bourbeau.
+      
+      |
+      <a href="_sources/examples.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

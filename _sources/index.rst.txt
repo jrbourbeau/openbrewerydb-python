@@ -8,21 +8,22 @@ openbrewerydb-python
 
 A Python wrapper for the `Open Brewery DB API <https://www.openbrewerydb.org/>`_.
 
-************
-Installation
-************
 
-``openbrewerydb`` can be installed directly from GitHub via
+**********
+User Guide
+**********
 
-.. code-block:: bash
+.. toctree::
+    :maxdepth: 2
 
-    $ pip install git+https://github.com/jrbourbeau/openbrewerydb-python.git
+    installation
+    api
+    examples
+    changelog
 
 
-This will install ``openbrewerydb`` along with it's dependencies (`Requests <http://docs.python-requests.org/en/master/>`_ and `Pandas <http://pandas.pydata.org/pandas-docs/stable/>`_).
+***********************
+Questions & Bug Reports
+***********************
 
-***
-API
-***
-
-.. autofunction:: openbrewerydb.load
+openbrewerydb-python is an open-source project and contributions are always welcome from anyone. If you have a question, would like to propose a new feature, or submit a bug report, feel free to open up an issue on the `issue tracker on GitHub <https://github.com/jrbourbeau/openbrewerydb-python/issues>`_.

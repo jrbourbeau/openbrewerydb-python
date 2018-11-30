@@ -1,6 +1,12 @@
 ./_modules/index.html
 ./_modules/openbrewerydb/core.html
+./_sources/api.rst.txt
+./_sources/changelog.rst.txt
+./_sources/examples.rst.txt
 ./_sources/index.rst.txt
+./_sources/installation.rst.txt
+./_static/LICENSE-openbrewerydb-website
+./_static/OpenBreweryDBLogo-1200x630.png
 ./_static/ajax-loader.gif
 ./_static/alabaster.css
 ./_static/basic.css
@@ -24,8 +30,12 @@
 ./_static/up-pressed.png
 ./_static/up.png
 ./_static/websupport.js
+./api.html
+./changelog.html
+./examples.html
 ./genindex.html
 ./index.html
+./installation.html
 ./objects.inv
 ./search.html
 ./searchindex.js
