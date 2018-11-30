@@ -16,6 +16,8 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import openbrewerydb
+
 
 # -- Project information -----------------------------------------------------
 
@@ -26,7 +28,7 @@ author = 'James Bourbeau'
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = ''
+release = openbrewerydb.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -69,7 +71,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['build', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -87,12 +89,18 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
+    'description': 'A Python wrapper for the Open Brewery DB API',
+    'logo': 'OpenBreweryDBLogo-1200x630.png',
+    'github_button': True,
+    'github_count': False,
     'github_user': 'jrbourbeau',
     'github_repo': 'openbrewerydb-python',
-    'github_button': 'false',
-    'show_powered_by': 'false',
-    'show_relbars': 'false',
-    'sidebar_width': '250px',
+    'show_powered_by': False,
+    'show_relbars': False,
+    'page_width': '960px',
+    'sidebar_width': '200px',
+    'travis_button': True,
+    'code_font_size': '0.8em',
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -110,9 +118,9 @@ html_static_path = ['_static']
 #
 html_sidebars = {
     '**': [
+        'about.html',
+        'navigation.html',
         'links.html',
-        # 'about.html',
-        # 'navigation.html',
         'relations.html',
         'searchbox.html',
         'donate.html',

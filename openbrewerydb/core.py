@@ -86,14 +86,14 @@ def load(state=None, city=None, brewery_type=None):
     Parameters
     ----------
     state : str, optional
-        State name (case-insensitive) to filter by (default is ``None``, all
+        State name (case-insensitive) to select (default is ``None``, all
         states will be included). Note that `'district of columbia'` is a
         valid ``state``.
     city : str, optional
-        City name (case-insensitive) to filter by (default is ``None``, all
+        City name (case-insensitive) to select (default is ``None``, all
         cities will be included).
     brewery_type : {None, 'micro', 'regional', 'brewpub', 'large', 'planning', 'bar', 'contract', 'proprietor'}
-        Brewery type to filter by (default is ``None``, all brewery types will be
+        Brewery type to select (default is ``None``, all brewery types will be
         included).
 
     Returns

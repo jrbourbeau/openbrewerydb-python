@@ -87,3 +87,14 @@ def test_load():
               state='texas',
               brewery_type='micro')
     assert isinstance(df, pd.DataFrame)
+    assert (df['city'] == 'Dallas').all()
+    assert (df['state'] == 'Texas').all()
+    assert (df['brewery_type'] == 'micro').all()
+
+
+@pytest.mark.remote_data
+def test_load_no_data():
+    with pytest.raises(ValueError) as err:
+        load(city='invalid_city',
+             state='maine')
+    assert 'No data found for this query' in str(err.value)

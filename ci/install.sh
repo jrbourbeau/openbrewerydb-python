@@ -19,7 +19,7 @@ conda create --quiet --name test-environment python=$PYTHON
 conda env update --quiet --name=test-environment --file=environment.yml
 source activate test-environment
 
-# Install pyunfold + dev dependencies
+# Install openbrewerydb + dev dependencies
 pip install --no-deps -e .
 echo conda list
 conda list
