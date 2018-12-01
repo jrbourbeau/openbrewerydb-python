@@ -3,21 +3,13 @@ from itertools import count
 import pandas as pd
 import requests
 
-from .states import states as valid_states
+from .constants import base_url, states, brewery_types, dtypes
 
 
 def _execute_request(url):
     r = requests.get(url)
     json = r.json()
     if json:
-        dtypes = {
-                  'id': int,
-                  'brewery_type': 'category',
-                  'state': 'category',
-                  'country': 'category',
-                  'latitude': float,
-                  'longitude': float,
-                  }
         df = pd.DataFrame(json).astype(dtypes)
     else:
         df = pd.DataFrame()
@@ -25,7 +17,7 @@ def _execute_request(url):
 
 
 def format_state(state):
-    if state.lower() not in valid_states:
+    if state.lower() not in states:
         raise ValueError(f'Invalid state entered, \'{state}\'')
     return f'by_state={state}'
 
@@ -35,23 +27,13 @@ def format_city(city):
 
 
 def format_brewery_type(brewery_type):
-    valid_types = {'micro',
-                   'regional',
-                   'brewpub',
-                   'large',
-                   'planning',
-                   'bar',
-                   'contract',
-                   'proprietor',
-                   }
-    if brewery_type not in valid_types:
+    if brewery_type not in brewery_types:
         raise ValueError(f'Invalid brewery_type entered. Must be in '
-                         '{valid_types}, but got \'{brewery_type}\'.')
+                         '{brewery_types}, but got \'{brewery_type}\'.')
     return f'by_type={brewery_type}'
 
 
 def _construct_query(state=None, city=None, brewery_type=None):
-    base_url = 'https://api.openbrewerydb.org/breweries'
     selectors = []
     if state is not None:
         selectors.append(format_state(state))
@@ -62,6 +44,8 @@ def _construct_query(state=None, city=None, brewery_type=None):
 
     if selectors:
         url = base_url + '?' + '&'.join(selectors)
+    else:
+        url = base_url
 
     return url
 

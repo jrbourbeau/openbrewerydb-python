@@ -1,4 +1,6 @@
 
+base_url = 'https://api.openbrewerydb.org/breweries'
+
 states = {'alabama',
           'alaska',
           'arizona',
@@ -50,4 +52,22 @@ states = {'alabama',
           'west virginia',
           'wisconsin',
           'wyoming',
+          }
+
+brewery_types = {'micro',
+                 'regional',
+                 'brewpub',
+                 'large',
+                 'planning',
+                 'bar',
+                 'contract',
+                 'proprietor',
+                 }
+
+dtypes = {'id': int,
+          'brewery_type': 'category',
+          'state': 'category',
+          'country': 'category',
+          'latitude': float,
+          'longitude': float,
           }

@@ -30,6 +30,11 @@ version = ''
 # The full version, including alpha/beta/rc tags
 release = openbrewerydb.__version__
 
+extlinks = {
+    'issue': ('https://github.com/jrbourbeau/openbrewerydb-python/issues/%s', 'Issue #'),
+    'pr': ('https://github.com/jrbourbeau/openbrewerydb-python/pull/%s', 'PR #')
+}
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -46,6 +51,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.extlinks',
     'numpydoc',
 ]
 

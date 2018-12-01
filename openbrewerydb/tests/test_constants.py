@@ -1,5 +1,5 @@
 
-from openbrewerydb.states import states
+from openbrewerydb.constants import states
 
 
 def test_num_states():
