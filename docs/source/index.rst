@@ -6,7 +6,13 @@
 openbrewerydb-python
 ====================
 
-A Python wrapper for the `Open Brewery DB API <https://www.openbrewerydb.org/>`_.
+``openbrewerydb`` is a Python wrapper for the `Open Brewery DB API <https://www.openbrewerydb.org/>`_. It allows for easy access to brewery data from Open Brewery DB:
+
+.. code-block:: python
+
+    >>> import openbrewerydb
+    >>> data = openbrewerydb.load(state='wisconsin',
+    ...                           brewery_type='micro')
 
 
 **********

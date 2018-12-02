@@ -6,62 +6,49 @@ import requests
 from .constants import base_url, states, brewery_types, dtypes
 
 
-def _execute_request(url):
-    r = requests.get(url)
-    json = r.json()
-    if json:
-        df = pd.DataFrame(json).astype(dtypes)
-    else:
-        df = pd.DataFrame()
-    return df
-
-
-def format_state(state):
-    if state.lower() not in states:
+def _validate_state(state):
+    if state is None:
+        return
+    elif state.lower() not in states:
         raise ValueError(f'Invalid state entered, \'{state}\'')
-    return f'by_state={state}'
 
 
-def format_city(city):
-    return f'by_city={city}'
-
-
-def format_brewery_type(brewery_type):
-    if brewery_type not in brewery_types:
+def _validate_brewery_type(brewery_type):
+    if brewery_type is None:
+        return
+    elif brewery_type not in brewery_types:
         raise ValueError(f'Invalid brewery_type entered. Must be in '
                          '{brewery_types}, but got \'{brewery_type}\'.')
-    return f'by_type={brewery_type}'
 
 
-def _construct_query(state=None, city=None, brewery_type=None):
-    selectors = []
-    if state is not None:
-        selectors.append(format_state(state))
-    if city is not None:
-        selectors.append(format_city(city))
-    if brewery_type is not None:
-        selectors.append(format_brewery_type(brewery_type))
+def _format_request_params(state=None, city=None, brewery_type=None, page=None,
+                           per_page=50):
+    _validate_state(state)
+    _validate_brewery_type(brewery_type)
 
-    if selectors:
-        url = base_url + '?' + '&'.join(selectors)
+    params = {'by_state': state,
+              'by_city': city,
+              'by_type': brewery_type,
+              }
+    if page is not None:
+        params['page'] = str(page)
+        params['per_page'] = str(per_page)
+
+    return params
+
+
+def _get_request(params=None):
+    response = requests.get(base_url, params=params)
+    return response
+
+
+def _get_data(params=None):
+    r = _get_request(params=params)
+    json = r.json()
+    if json:
+        return pd.DataFrame(json).astype(dtypes)
     else:
-        url = base_url
-
-    return url
-
-
-def _gen_data(state=None, city=None, brewery_type=None):
-
-    url = _construct_query(state=state,
-                           city=city,
-                           brewery_type=brewery_type)
-    for page in count(start=1):
-        query_url = url + f'&page={page}&per_page=50'
-        df = _execute_request(query_url)
-        if df.empty:
-            return
-        else:
-            yield df
+        return pd.DataFrame()
 
 
 def load(state=None, city=None, brewery_type=None):
@@ -93,12 +80,21 @@ def load(state=None, city=None, brewery_type=None):
     >>> data = openbrewerydb.load(state='wisconsin',
     ...                           brewery_type='micro')
     """
-    data_generator = _gen_data(state=state,
-                               city=city,
-                               brewery_type=brewery_type)
-    data = [d for d in data_generator]
+    data = []
+    for page in count(start=1):
+        params = _format_request_params(state=state,
+                                        city=city,
+                                        brewery_type=brewery_type,
+                                        page=page,
+                                        per_page=50)
+        df = _get_data(params=params)
+        if df.empty:
+            break
+        data.append(df)
+
     if not data:
         raise ValueError('No data found for this query')
+
     df = pd.concat(data, ignore_index=True)
 
     return df
