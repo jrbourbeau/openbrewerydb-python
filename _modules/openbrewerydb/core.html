@@ -40,62 +40,49 @@
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="k">import</span> <span class="n">base_url</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">brewery_types</span><span class="p">,</span> <span class="n">dtypes</span>
 
 
-<span class="k">def</span> <span class="nf">_execute_request</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">json</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">json</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">json</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">df</span>
-
-
-<span class="k">def</span> <span class="nf">format_state</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_validate_state</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Invalid state entered, </span><span class="se">\&#39;</span><span class="si">{state}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;by_state=</span><span class="si">{state}</span><span class="s1">&#39;</span>
 
 
-<span class="k">def</span> <span class="nf">format_city</span><span class="p">(</span><span class="n">city</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;by_city=</span><span class="si">{city}</span><span class="s1">&#39;</span>
-
-
-<span class="k">def</span> <span class="nf">format_brewery_type</span><span class="p">(</span><span class="n">brewery_type</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">brewery_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">brewery_types</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_validate_brewery_type</span><span class="p">(</span><span class="n">brewery_type</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">brewery_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="n">brewery_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">brewery_types</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Invalid brewery_type entered. Must be in &#39;</span>
                          <span class="s1">&#39;</span><span class="si">{brewery_types}</span><span class="s1">, but got </span><span class="se">\&#39;</span><span class="si">{brewery_type}</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;by_type=</span><span class="si">{brewery_type}</span><span class="s1">&#39;</span>
 
 
-<span class="k">def</span> <span class="nf">_construct_query</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brewery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">selectors</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">selectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_state</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">city</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">selectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_city</span><span class="p">(</span><span class="n">city</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">brewery_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">selectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_brewery_type</span><span class="p">(</span><span class="n">brewery_type</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">_format_request_params</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brewery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">per_page</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">_validate_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+    <span class="n">_validate_brewery_type</span><span class="p">(</span><span class="n">brewery_type</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">selectors</span><span class="p">:</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="o">+</span> <span class="s1">&#39;?&#39;</span> <span class="o">+</span> <span class="s1">&#39;&amp;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">selectors</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;by_state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
+              <span class="s1">&#39;by_city&#39;</span><span class="p">:</span> <span class="n">city</span><span class="p">,</span>
+              <span class="s1">&#39;by_type&#39;</span><span class="p">:</span> <span class="n">brewery_type</span><span class="p">,</span>
+              <span class="p">}</span>
+    <span class="k">if</span> <span class="n">page</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;page&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;per_page&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">per_page</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<span class="k">def</span> <span class="nf">_get_request</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_get_request</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">json</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">json</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">json</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">base_url</span>
-
-    <span class="k">return</span> <span class="n">url</span>
-
-
-<span class="k">def</span> <span class="nf">_gen_data</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brewery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
-    <span class="n">url</span> <span class="o">=</span> <span class="n">_construct_query</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-                           <span class="n">city</span><span class="o">=</span><span class="n">city</span><span class="p">,</span>
-                           <span class="n">brewery_type</span><span class="o">=</span><span class="n">brewery_type</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">query_url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="n">f</span><span class="s1">&#39;&amp;page=</span><span class="si">{page}</span><span class="s1">&amp;per_page=50&#39;</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">_execute_request</span><span class="p">(</span><span class="n">query_url</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="load"><a class="viewcode-back" href="../../api.html#openbrewerydb.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brewery_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -127,12 +114,21 @@
 <span class="sd">    &gt;&gt;&gt; data = openbrewerydb.load(state=&#39;wisconsin&#39;,</span>
 <span class="sd">    ...                           brewery_type=&#39;micro&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data_generator</span> <span class="o">=</span> <span class="n">_gen_data</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-                               <span class="n">city</span><span class="o">=</span><span class="n">city</span><span class="p">,</span>
-                               <span class="n">brewery_type</span><span class="o">=</span><span class="n">brewery_type</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data_generator</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">_format_request_params</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                                        <span class="n">city</span><span class="o">=</span><span class="n">city</span><span class="p">,</span>
+                                        <span class="n">brewery_type</span><span class="o">=</span><span class="n">brewery_type</span><span class="p">,</span>
+                                        <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span>
+                                        <span class="n">per_page</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">_get_data</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No data found for this query&#39;</span><span class="p">)</span>
+
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df</span></div>
