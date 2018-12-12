@@ -6,8 +6,8 @@
 Changelog
 *********
 
-Upcoming Release
-----------------
+Version 0.1.1 (December 12, 2018)
+---------------------------------
 
 - Fix bug when ``load()`` is called without any arguments (:pr:`3`)
 - Internal refactoring to improve test coverage (:pr:`3`)
