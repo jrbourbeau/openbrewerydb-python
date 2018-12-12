@@ -1,4 +1,7 @@
 
+import sys
+from contextlib import contextmanager
+from timeit import default_timer
 from itertools import count
 import pandas as pd
 import requests
@@ -51,7 +54,17 @@ def _get_data(params=None):
         return pd.DataFrame()
 
 
-def load(state=None, city=None, brewery_type=None):
+@contextmanager
+def timer(verbose=False):
+    start_time = default_timer()
+    yield
+    elapsed = default_timer() - start_time
+    if verbose:
+        sys.stdout.write(f'\nTime elapsed: {elapsed:0.2f} sec')
+        sys.stdout.flush()
+
+
+def load(state=None, city=None, brewery_type=None, verbose=False):
     """ Query the Open Brewery DB
 
     Parameters
@@ -66,6 +79,10 @@ def load(state=None, city=None, brewery_type=None):
     brewery_type : {None, 'micro', 'regional', 'brewpub', 'large', 'planning', 'bar', 'contract', 'proprietor'}
         Brewery type to select (default is ``None``, all brewery types will be
         included).
+    verbose : bool, optional
+        Option for verbose output (default is ``False``).
+
+        .. versionadded:: 0.1.1
 
     Returns
     -------
@@ -81,16 +98,26 @@ def load(state=None, city=None, brewery_type=None):
     ...                           brewery_type='micro')
     """
     data = []
-    for page in count(start=1):
-        params = _format_request_params(state=state,
-                                        city=city,
-                                        brewery_type=brewery_type,
-                                        page=page,
-                                        per_page=50)
-        df = _get_data(params=params)
-        if df.empty:
-            break
-        data.append(df)
+    num_breweries = 0
+    with timer(verbose=verbose):
+        for page in count(start=1):
+            params = _format_request_params(state=state,
+                                            city=city,
+                                            brewery_type=brewery_type,
+                                            page=page,
+                                            per_page=50)
+            df = _get_data(params=params)
+
+            if df.empty:
+                break
+
+            num_breweries += df.shape[0]
+            if verbose:
+                msg = f'\rLoaded data for {num_breweries} breweries'
+                sys.stdout.write(msg)
+                sys.stdout.flush()
+
+            data.append(df)
 
     if not data:
         raise ValueError('No data found for this query')

@@ -1,11 +1,12 @@
-
+import re
+import time
 import pandas as pd
 import pytest
 from unittest import mock
 
 from openbrewerydb.constants import dtypes
 from openbrewerydb.core import (_validate_state, _validate_brewery_type,
-                                _format_request_params, _get_data, load)
+                                _format_request_params, _get_data, load, timer)
 
 from example_data import test_json_data
 
@@ -131,3 +132,32 @@ def test_load():
     assert (df['city'] == 'Dallas').all()
     assert (df['state'] == 'Texas').all()
     assert (df['brewery_type'] == 'micro').all()
+
+
+@pytest.mark.parametrize('verbose', [True, False])
+@mock.patch('openbrewerydb.core._get_data')
+def test_load_verbose(mock_get_data, verbose, capsys):
+    test_data = [pd.DataFrame([1, 4, 5]),
+                 pd.DataFrame([7, 2]),
+                 pd.DataFrame([4.2, 4]),
+                 pd.DataFrame(),
+                 ]
+    mock_get_data.side_effect = test_data
+    load(verbose=verbose)
+    out, err = capsys.readouterr()
+    if verbose:
+        assert 'Loaded data for ' in out
+        assert 'Time elapsed: ' in out
+    else:
+        assert out == ''
+
+
+@pytest.mark.parametrize('verbose', [True, False])
+def test_timer(capsys, verbose):
+    with timer(verbose=verbose):
+        time.sleep(1)
+    out, err = capsys.readouterr()
+    if verbose:
+        assert re.match(r'\nTime elapsed: \d+\.\d+ sec', out) is not None
+    else:
+        assert out == ''
