@@ -37,7 +37,7 @@
 <h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="openbrewerydb.load">
-<code class="descclassname">openbrewerydb.</code><code class="descname">load</code><span class="sig-paren">(</span><em>state=None</em>, <em>city=None</em>, <em>brewery_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/openbrewerydb/core.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openbrewerydb.load" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">openbrewerydb.</code><code class="descname">load</code><span class="sig-paren">(</span><em>state=None</em>, <em>city=None</em>, <em>brewery_type=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/openbrewerydb/core.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#openbrewerydb.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query the Open Brewery DB</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -56,6 +56,12 @@ cities will be included).</p>
 <dt><strong>brewery_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{None, ‘micro’, ‘regional’, ‘brewpub’, ‘large’, ‘planning’, ‘bar’, ‘contract’, ‘proprietor’}</span></dt>
 <dd><p class="first last">Brewery type to select (default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, all brewery types will be
 included).</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first">Option for verbose output (default is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+<div class="last versionadded">
+<p><span class="versionmodified">New in version 0.1.1.</span></p>
+</div>
 </dd>
 </dl>
 </td>
